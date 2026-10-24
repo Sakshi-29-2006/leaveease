@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#173b57">
+    <title>Admin Portal | LeaveEase</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header class="navbar">
+        <a href="/" class="brand">
+            <span class="brand-icon">L</span>
+            <span>LeaveEase</span>
+        </a>
+        <span class="nav-label">Administrator Portal</span>
+    </header>
+
+    <main class="main-container">
+        <!-- Admin Login -->
+        <section id="loginSection" class="login-section">
+            <div class="login-card">
+                <div class="login-icon" aria-hidden="true">◆</div>
+                <p class="eyebrow">SECURE ACCESS</p>
+                <h1>Welcome back</h1>
+                <p class="subtitle">Sign in to manage employee leave requests.</p>
+
+                <div id="loginMessage" class="message" role="alert" aria-live="polite" hidden></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter administrator username"
+                            autocomplete="username"
+                            maxlength="80"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            maxlength="200"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" id="loginButton" class="btn btn-primary btn-full">
+                        Sign In
+                    </button>
+                </form>
+
+                <a href="/" class="back-link">← Back to employee portal</a>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard -->
+        <section id="dashboardSection" class="dashboard-section" hidden>
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">ADMINISTRATION</p>
+                    <h1>Leave Management</h1>
+                    <p class="subtitle">Review requests and manage employee leave applications.</p>
+                </div>
+
+                <button type="button" id="logoutButton" class="btn btn-outline">
+                    Sign Out
+                </button>
+            </div>
+
+            <div class="welcome-strip">
+                <div>
+                    <p class="welcome-title">Welcome, <span id="adminUsername">Administrator</span></p>
+                    <p class="welcome-description">Here is the current overview of leave applications.</p>
+                </div>
+                <span class="admin-badge">Administrator</span>
+            </div>
+
+            <div id="dashboardMessage" class="message" role="status" aria-live="polite" hidden></div>
+
+            <!-- Dashboard Statistics -->
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Requests</span>
+                        <span class="stat-icon total-icon" aria-hidden="true">▤</span>
+                    </div>
+                    <p id="totalCount" class="stat-value">—</p>
+                    <p class="stat-description">All applications received</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Pending</span>
+                        <span class="stat-icon pending-icon" aria-hidden="true">◷</span>
+                    </div>
+                    <p id="pendingCount" class="stat-value">—</p>
+                    <p class="stat-description">Awaiting a decision</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Approved</span>
+                        <span class="stat-icon approved-icon" aria-hidden="true">✓</span>
+                    </div>
+                    <p id="approvedCount" class="stat-value">—</p>
+                    <p class="stat-description">Requests approved</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Rejected</span>
+                        <span class="stat-icon rejected-icon" aria-hidden="true">×</span>
+                    </div>
+                    <p id="rejectedCount" class="stat-value">—</p>
+                    <p class="stat-description">Requests rejected</p>
+                </article>
+            </div>
+
+            <!-- Leave Requests -->
+            <section class="requests-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Leave Applications</h2>
+                        <p class="subtitle">Review employee details and application status.</p>
+                    </div>
+
+                    <button type="button" id="refreshButton" class="btn btn-outline">
+                        ↻ Refresh
+                    </button>
+                </div>
+
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="statusFilter">Filter by status</label>
+                        <select id="statusFilter">
+                            <option value="">All Requests</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group search-group">
+                        <label for="searchInput">Search requests</label>
+                        <input
+                            type="search"
+                            id="searchInput"
+                            placeholder="Search name, email or department"
+                        >
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee</th>
+                                <th>Leave Details</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Admin Remark</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    Sign in to view leave applications.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="requestCount" class="table-footer">No requests loaded.</p>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 LeaveEase · Leave Request Management System</p>
+    </footer>
+
+    <script src="/js/admin.js" defer></script>
+</body>
+</html>

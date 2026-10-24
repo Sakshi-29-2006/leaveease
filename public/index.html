@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#001c55">
+    <title>LeaveEase | Leave Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <a href="/" class="brand">
+            <span class="brand-icon">L</span>
+            <span>LeaveEase</span>
+        </a>
+        <nav>
+            <a href="#apply" class="nav-link active">Apply for Leave</a>
+            <a href="#guidelines" class="nav-link">Guidelines</a>
+            <a href="/admin.html" class="nav-link">Admin</a>
+        </nav>
+        <div class="profile">
+            <span class="avatar">E</span>
+            <span>Employee Portal</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="welcome">
+            <div class="welcome-content">
+                <p class="eyebrow">EMPLOYEE SELF SERVICE</p>
+                <h1>Take time when you need it<span>.</span></h1>
+                <p class="subtitle">Submit a leave request and manage your time off with ease.</p>
+                <a href="#apply" class="welcome-button">Apply for leave <span>→</span></a>
+            </div>
+            <div class="welcome-art" aria-hidden="true">
+                <div class="art-circle">✦</div>
+                <span class="art-leaf leaf-one">✿</span>
+                <span class="art-leaf leaf-two">✧</span>
+                <span class="art-sparkle">✳</span>
+            </div>
+        </section>
+
+        <section class="stats" aria-label="Leave request statistics">
+            <article class="stat-card">
+                <div class="stat-icon purple">▤</div>
+                <div>
+                    <p>Total Requests</p>
+                    <h2 id="totalCount">0</h2>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon amber">◷</div>
+                <div>
+                    <p>Pending</p>
+                    <h2 id="pendingCount">0</h2>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon green">✓</div>
+                <div>
+                    <p>Approved</p>
+                    <h2 id="approvedCount">0</h2>
+                </div>
+            </article>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel form-panel" id="apply">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">NEW APPLICATION</p>
+                        <h2>Request time off</h2>
+                        <p class="muted">Complete all required fields marked with an asterisk.</p>
+                    </div>
+                    <span class="heading-icon">✎</span>
+                </div>
+
+                <div id="formMessage" class="message hidden" role="alert" aria-live="assertive"></div>
+
+                <form id="leaveForm" novalidate>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="employee_name">Full name <span>*</span></label>
+                            <input
+                                id="employee_name"
+                                name="employee_name"
+                                type="text"
+                                placeholder="e.g. Aarya Sharma"
+                                minlength="2"
+                                maxlength="80"
+                                autocomplete="name"
+                                aria-describedby="nameHint nameError"
+                                required>
+                            <small class="field-hint" id="nameHint">Start with a letter. Spaces, hyphens and apostrophes are allowed.</small>
+                            <small class="field-error" id="nameError" data-error="employee_name"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="email">Work email <span>*</span></label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="you@company.com"
+                                maxlength="254"
+                                autocomplete="email"
+                                required>
+                            <small class="field-error" data-error="email"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="department">Department <span>*</span></label>
+                            <select id="department" name="department" required>
+                                <option value="">Select department</option>
+                                <option>Engineering</option>
+                                <option>Human Resources</option>
+                                <option>Design</option>
+                                <option>Marketing</option>
+                                <option>Finance</option>
+                                <option>Operations</option>
+                            </select>
+                            <small class="field-error" data-error="department"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="leave_type">Leave type <span>*</span></label>
+                            <select id="leave_type" name="leave_type" required>
+                                <option value="">Choose leave type</option>
+                                <option value="Casual Leave">Casual Leave</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Earned Leave">Earned Leave</option>
+                            </select>
+                            <small class="field-error" data-error="leave_type"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="start_date">Start date <span>*</span></label>
+                            <input id="start_date" name="start_date" type="date" required>
+                            <small class="field-error" data-error="start_date"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="end_date">End date <span>*</span></label>
+                            <input id="end_date" name="end_date" type="date" required>
+                            <small class="field-error" data-error="end_date"></small>
+                        </div>
+
+                        <div class="field full-width">
+                            <label for="reason">Reason for leave <span>*</span></label>
+                            <textarea
+                                id="reason"
+                                name="reason"
+                                rows="4"
+                                minlength="10"
+                                maxlength="500"
+                                placeholder="Briefly explain your reason for requesting leave..."
+                                aria-describedby="reasonHint charCount"
+                                required></textarea>
+                            <div class="input-footer">
+                                <small class="field-error" data-error="reason"></small>
+                                <small class="character-count"><span id="charCount">0</span>/500 characters</small>
+                            </div>
+                            <small class="field-hint" id="reasonHint">Enter at least 10 characters.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-note">
+                        <span>ⓘ</span>
+                        <p>Please verify your leave dates and details before continuing.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary" id="resetButton">Clear form</button>
+                        <button type="submit" class="btn btn-primary" id="submitButton">
+                            <span class="button-label">Validate request</span>
+                            <span class="button-arrow">→</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="side-column">
+                <section class="panel date-panel">
+                    <div class="calendar-icon">▦</div>
+                    <p class="eyebrow">PLANNING AHEAD</p>
+                    <h3>Your time matters.</h3>
+                    <p class="muted">Submit your request early to give your manager enough time to review it.</p>
+                    <div class="tip-row"><span>01</span><p>Choose accurate leave dates.</p></div>
+                    <div class="tip-row"><span>02</span><p>Provide a clear reason.</p></div>
+                    <div class="tip-row"><span>03</span><p>Check your request status.</p></div>
+                </section>
+
+                <section class="panel guidelines" id="guidelines">
+                    <h3>Before you submit</h3>
+                    <ul>
+                        <li>All starred fields are required.</li>
+                        <li>Your name must begin with a letter.</li>
+                        <li>The end date cannot be before the start date.</li>
+                        <li>Reasons must contain 10–500 characters.</li>
+                        <li>Requests start with Pending status.</li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+
+        <section class="panel history-panel">
+            <div class="panel-heading history-heading">
+                <div>
+                    <p class="eyebrow">YOUR ACTIVITY</p>
+                    <h2>Recent leave requests</h2>
+                    <p class="muted">Enter your work email to view your submitted requests and their current status.</p>
+                </div>
+            </div>
+
+            <div class="history-search">
+                <div class="field">
+                    <label for="historyEmail">Work email</label>
+                    <input
+                        type="email"
+                        id="historyEmail"
+                        placeholder="Enter the email used for your request"
+                        maxlength="254"
+                        autocomplete="email">
+                    <small id="historyEmailError" class="field-error"></small>
+                </div>
+
+                <button class="btn btn-primary" id="refreshButton" type="button">
+                    Search requests
+                </button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>REQUEST ID</th>
+                            <th>LEAVE TYPE</th>
+                            <th>START DATE</th>
+                            <th>END DATE</th>
+                            <th>STATUS</th>
+                            <th>ADMIN REMARK</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <span class="empty-icon">▤</span>
+                                <strong>No requests to display</strong>
+                                <span>Enter your email and select Search requests.</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <a href="/" class="brand footer-brand">LeaveEase</a>
+            <span>Simple leave management, made easier.</span>
+        </footer>
+    </main>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
