@@ -324,7 +324,8 @@ app.get('/api/leave-requests', [
     }
 });
 
-// One-time administrator setup
+
+ // Temporary administrator credential reset
 app.post('/api/admin/setup', async (req, res) => {
     try {
         const setupSecret = process.env.ADMIN_SETUP_SECRET;
@@ -333,17 +334,6 @@ app.post('/api/admin/setup', async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: 'Forbidden.'
-            });
-        }
-
-        const adminCount = db.prepare(
-            'SELECT COUNT(*) AS count FROM admins'
-        ).get().count;
-
-        if (adminCount > 0) {
-            return res.status(409).json({
-                success: false,
-                message: 'Admin setup has already been completed.'
             });
         }
 
@@ -371,25 +361,37 @@ app.post('/api/admin/setup', async (req, res) => {
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
+        const existingAdmin = db.prepare(
+            'SELECT id FROM admins ORDER BY id LIMIT 1'
+        ).get();
 
-        db.prepare(`
-            INSERT INTO admins (username, password_hash)
-            VALUES (?, ?)
-        `).run(username.trim(), passwordHash);
+        if (existingAdmin) {
+            db.prepare(`
+                UPDATE admins
+                SET username = ?, password_hash = ?
+                WHERE id = ?
+            `).run(username.trim(), passwordHash, existingAdmin.id);
+        } else {
+            db.prepare(`
+                INSERT INTO admins (username, password_hash)
+                VALUES (?, ?)
+            `).run(username.trim(), passwordHash);
+        }
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
-            message: 'Administrator account created successfully.'
+            message: 'Administrator credentials updated successfully.'
         });
     } catch (error) {
         console.error('Admin setup failed:', error.message);
 
         return res.status(500).json({
             success: false,
-            message: 'Unable to create administrator account.'
+            message: 'Unable to update administrator credentials.'
         });
     }
 });
+
 
 // Administrator login
 app.post('/api/admin/login', [
