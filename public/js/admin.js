@@ -42,10 +42,6 @@ async function apiRequest(url, options = {}) {
     }
 
     if (!response.ok) {
-        if (response.status === 401) {
-            showLogin();
-        }
-
         throw new Error(data.message || 'The request could not be completed.');
     }
 
@@ -87,6 +83,7 @@ loginForm.addEventListener('submit', async event => {
 
         await loadDashboard();
     } catch (error) {
+        showLogin();
         showMessage(loginMessage, error.message);
     } finally {
         loginButton.disabled = false;
@@ -304,11 +301,11 @@ logoutButton.addEventListener('click', async () => {
             method: 'POST'
         });
 
+        allRequests = [];
+        loginForm.reset();
         showLogin();
         hideMessage(loginMessage);
-        loginForm.reset();
-        allRequests = [];
-        window.location.reload();
+        showMessage(loginMessage, data.message, 'success');
     } catch (error) {
         showMessage(dashboardMessage, error.message);
     } finally {

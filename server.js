@@ -32,6 +32,9 @@ const leaveTypes = [
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Required when deployed behind Render's proxy.
+app.set('trust proxy', 1);
+
 app.use(session({
     name: 'leaveease.sid',
     secret: process.env.SESSION_SECRET,
@@ -39,7 +42,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: 'auto',
         sameSite: 'lax',
         maxAge: 1000 * 60 * 60
     }
@@ -102,6 +105,7 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+// Health check
 app.get('/api/health', (req, res) => {
     res.status(200).json({
         success: true,
@@ -135,8 +139,7 @@ app.get('/api/db-test', (req, res) => {
     }
 });
 
-/* Employee leave request submission */
-
+// Employee leave request submission
 app.post('/api/leave-requests', [
     body('employee_name')
         .isString().withMessage('Name must be text.')
@@ -272,8 +275,7 @@ app.post('/api/leave-requests', [
     }
 });
 
-/* Employee leave request history */
-
+// Employee leave request history
 app.get('/api/leave-requests', [
     query('email')
         .isString().withMessage('Please provide a valid email address.')
@@ -322,9 +324,7 @@ app.get('/api/leave-requests', [
     }
 });
 
-
-/* One-time administrator setup */
-
+// One-time administrator setup
 app.post('/api/admin/setup', async (req, res) => {
     try {
         const setupSecret = process.env.ADMIN_SETUP_SECRET;
@@ -391,9 +391,7 @@ app.post('/api/admin/setup', async (req, res) => {
     }
 });
 
-
-/* Administrator login */
-
+// Administrator login
 app.post('/api/admin/login', [
     body('username')
         .isString().withMessage('Username must be text.')
@@ -472,8 +470,7 @@ app.post('/api/admin/login', [
     }
 });
 
-/* Check administrator session */
-
+// Check administrator session
 app.get('/api/admin/me', requireAdmin, (req, res) => {
     res.status(200).json({
         success: true,
@@ -484,8 +481,7 @@ app.get('/api/admin/me', requireAdmin, (req, res) => {
     });
 });
 
-/* Administrator dashboard statistics */
-
+// Administrator dashboard statistics
 app.get('/api/admin/stats', requireAdmin, (req, res) => {
     try {
         const stats = db.prepare(`
@@ -516,8 +512,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
     }
 });
 
-/* View all leave requests (administrator only) */
-
+// View all leave requests (administrator only)
 app.get('/api/admin/leave-requests', requireAdmin, [
     query('status')
         .optional()
@@ -557,8 +552,7 @@ app.get('/api/admin/leave-requests', requireAdmin, [
     }
 });
 
-/* Approve or reject a leave request */
-
+// Approve or reject a leave request
 app.patch('/api/admin/leave-requests/:id', requireAdmin, [
     body('status')
         .isString().withMessage('Status must be text.')
@@ -622,8 +616,7 @@ app.patch('/api/admin/leave-requests/:id', requireAdmin, [
     }
 });
 
-/* Administrator logout */
-
+// Administrator logout
 app.post('/api/admin/logout', requireAdmin, (req, res) => {
     req.session.destroy(error => {
         if (error) {
@@ -637,7 +630,7 @@ app.post('/api/admin/logout', requireAdmin, (req, res) => {
 
         res.clearCookie('leaveease.sid', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: 'auto',
             sameSite: 'lax'
         });
 
@@ -648,8 +641,7 @@ app.post('/api/admin/logout', requireAdmin, (req, res) => {
     });
 });
 
-/* Handle unknown routes */
-
+// Handle unknown routes
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -658,5 +650,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`LeaveEase server running at http://localhost:${PORT}`);
+    console.log(`LeaveEase server running on port ${PORT}`);
 });
