@@ -322,6 +322,76 @@ app.get('/api/leave-requests', [
     }
 });
 
+
+/* One-time administrator setup */
+
+app.post('/api/admin/setup', async (req, res) => {
+    try {
+        const setupSecret = process.env.ADMIN_SETUP_SECRET;
+
+        if (!setupSecret || req.get('x-admin-setup-secret') !== setupSecret) {
+            return res.status(403).json({
+                success: false,
+                message: 'Forbidden.'
+            });
+        }
+
+        const adminCount = db.prepare(
+            'SELECT COUNT(*) AS count FROM admins'
+        ).get().count;
+
+        if (adminCount > 0) {
+            return res.status(409).json({
+                success: false,
+                message: 'Admin setup has already been completed.'
+            });
+        }
+
+        const { username, password } = req.body;
+
+        if (
+            typeof username !== 'string' ||
+            !/^[A-Za-z0-9_.-]{3,80}$/.test(username.trim())
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username must be 3–80 valid characters.'
+            });
+        }
+
+        if (
+            typeof password !== 'string' ||
+            password.length < 8 ||
+            password.length > 200
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must contain 8–200 characters.'
+            });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        db.prepare(`
+            INSERT INTO admins (username, password_hash)
+            VALUES (?, ?)
+        `).run(username.trim(), passwordHash);
+
+        return res.status(201).json({
+            success: true,
+            message: 'Administrator account created successfully.'
+        });
+    } catch (error) {
+        console.error('Admin setup failed:', error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to create administrator account.'
+        });
+    }
+});
+
+
 /* Administrator login */
 
 app.post('/api/admin/login', [
